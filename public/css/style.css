@@ -1,0 +1,107 @@
+body {
+    width: auto;
+    margin: 0;
+    padding: 0;
+    background-color: #f1f1f1;
+    direction: rtl;
+    text-align: right;
+}
+
+.lg-space {
+    height: 0;
+    padding: 40px;
+}
+
+.md-space {
+    height: 0;
+    padding: 30px;
+}
+
+.sm-space {
+    height: 0;
+    padding: 20px;
+}
+
+.login {
+    background-color: teal;
+    padding: 25px;
+}
+
+.login.form > .field > label {
+    color: white;
+    font-size: 16px;
+}
+
+
+#message > ul.list {
+    text-align: right;
+}
+
+.ui.message#message .list:not(.ui) li
+{
+    margin: 0 1em .3em 0;
+}
+
+.ui.message#message .list:not(.ui) li:before
+{
+    right: -1em;
+    left: 0;
+}
+
+.ui.buttons .button:first-child {
+    border-radius: 0 0.28571429rem 0.28571429rem 0;
+}
+
+.ui.buttons .button:last-child {
+    border-radius: 0.28571429rem  0  0 0.28571429rem;
+}
+
+.ui.vertical.buttons .button:first-child {
+    border-radius: 0.28571429rem 0.28571429rem 0 0;
+}
+
+.ui.vertical.buttons .button:last-child {
+    border-radius: 0 0 0.28571429rem 0.28571429rem;
+}
+
+textarea {
+    resize: none !important;
+    text-align: justify !important;
+}
+
+.ui.celled.table tr td:first-child,
+.ui.celled.table tr th:first-child,
+.ui.celled.table tr td,
+.ui.celled.table tr th
+{
+    border-right: none;
+    border-left: 1px solid rgba(34,36,38,.1);
+}
+
+.ui.celled.table tr td:last-child,
+.ui.celled.table tr th:last-child
+{
+    border-right: none;
+    border-left: none;
+}
+
+.ui.button {
+    margin: 0;
+}
+
+.ui.radio.checkbox label
+{
+    padding-right: 1.85714em;
+    padding-left: 0;
+}
+
+.ui.radio.checkbox label:before,
+.ui.radio.checkbox label:after
+{
+    right: 0;
+}
+
+.ui.form .inline.field>:first-child, .ui.form .inline.fields .field>:first-child
+{
+    margin: 0 0 0 .85714286em !important;
+}
