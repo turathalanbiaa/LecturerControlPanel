@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Lecturer;
 use App\Models\Message;
+use App\Models\Student;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 
 class MainController extends Controller
@@ -27,15 +29,37 @@ class MainController extends Controller
     {
         if (self::haveCookie())
         {
+//            $unwatchedMessages = DB::table('student')
+//                ->leftJoin('message', 'student.ID', '=', 'message.Sender')
+//                ->where('message.Target',$lecturer->ID)
+//                ->where('message.SenderType',1)
+//                ->where('message.Watched',0)
+//                ->get();
+
             $lecturer = Lecturer::find($_SESSION["LECTURER_ID"]);
+            $students = Student::orderBy("ID","ASC")->get();
+            $currentStudent = [];
+            $messages = [];
 
-            $students = Message::where("SenderType","1")->get(["Sender"]);
+            if (!is_null(Input::get("studentId")))
+            {
+                $currentStudent = Student::find(Input::get("studentId"));
 
-            dd($students);
+                $messages = Message::where('Sender',Input::get("studentId"))
+                    ->where('Target',$lecturer->ID)
+                    ->where('SenderType',1)
+                    ->orderBy('ID')
+                    ->get();
+            }
+
 
             return view("main.messages")->with([
-                "lecturer"=>$lecturer
+                "lecturer" => $lecturer,
+                "students" => $students,
+                "currentStudent" => $currentStudent,
+                "messages" => $messages
             ]);
+
         }
     }
 

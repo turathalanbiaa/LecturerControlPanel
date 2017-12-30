@@ -1,4 +1,4 @@
-@extends("layout.main_layout")
+@extends("layout.layout")
 
 @section("title")
     <title> تسجيل الدخول الى لوحة التحكم الأستاذ </title>
