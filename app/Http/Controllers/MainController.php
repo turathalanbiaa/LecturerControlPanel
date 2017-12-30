@@ -45,9 +45,15 @@ class MainController extends Controller
             {
                 $currentStudent = Student::find(Input::get("studentId"));
 
-                $messages = Message::where('Sender',Input::get("studentId"))
+                $messages = DB::table('message')
+                    ->where('Sender',Input::get("studentId"))
                     ->where('Target',$lecturer->ID)
                     ->where('SenderType',1)
+                    ->orWhere(function ($query) {
+                        $query->where('Sender', $_SESSION["LECTURER_ID"])
+                            ->where('Target', Input::get("studentId"))
+                            ->where('SenderType',2);
+                    })
                     ->orderBy('ID')
                     ->get();
             }
