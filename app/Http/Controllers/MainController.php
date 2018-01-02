@@ -13,6 +13,14 @@ class MainController extends Controller
 {
     public function index()
     {
+
+//            $unwatchedMessages = DB::table('student')
+//                ->leftJoin('message', 'student.ID', '=', 'message.Sender')
+//                ->where('message.Target',$lecturer->ID)
+//                ->where('message.SenderType',1)
+//                ->where('message.Watched',0)
+//                ->get();
+
         if (self::haveCookie())
         {
             $lecturer = Lecturer::find($_SESSION["LECTURER_ID"]);
@@ -29,16 +37,9 @@ class MainController extends Controller
     {
         if (self::haveCookie())
         {
-//            $unwatchedMessages = DB::table('student')
-//                ->leftJoin('message', 'student.ID', '=', 'message.Sender')
-//                ->where('message.Target',$lecturer->ID)
-//                ->where('message.SenderType',1)
-//                ->where('message.Watched',0)
-//                ->get();
-
             $lecturer = Lecturer::find($_SESSION["LECTURER_ID"]);
             $students = Student::orderBy("ID","ASC")->get();
-            $currentStudent = [];
+            $currentStudent = null;
             $messages = [];
 
             if (!is_null(Input::get("studentId")))
@@ -58,15 +59,37 @@ class MainController extends Controller
                     ->get();
             }
 
-
             return view("main.messages")->with([
                 "lecturer" => $lecturer,
                 "students" => $students,
                 "currentStudent" => $currentStudent,
                 "messages" => $messages
             ]);
-
         }
+
+        return redirect("/login");
+    }
+
+    public function sendMessage()
+    {
+        if (self::haveCookie())
+        {
+            $message = new Message();
+            $message->Message = Input::get("message");
+            $message->Time = date("Y-m-d h:i:s");
+            $message->Sender = $_SESSION["LECTURER_ID"];
+            $message->Target = Input::get("studentId");
+            $message->SenderType = 2;
+            $message->Watched = 0;
+            $success = $message->save();
+
+            if (!$success)
+                return ["success" => false];
+
+            return ["success" => true, "message"=>Input::get("message")];
+        }
+
+        return redirect("/login");
     }
 
     public function login()

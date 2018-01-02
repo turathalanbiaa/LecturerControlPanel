@@ -5,8 +5,10 @@
 @endsection
 
 @section("content")
-    <div class="ui sixteen wide column">
-        {{"main page"}}
+    <div class="ui grid">
+        <div class="ui sixteen wide column">
+            {{"main page"}}
+        </div>
     </div>
 @endsection
 

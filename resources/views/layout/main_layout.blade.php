@@ -73,23 +73,23 @@
     </div>
 
     <div class="pusher">
-        <div class="ui container">
-            <div class="ui right aligned grid">
-                <div class="sixteen wide column">
-                    <div class="ui teal inverted large menu">
-                        <div class="item">
-                            <h3 class="ui large inverted right aligned header">لوحة التحكم - معهد تراث الأنبياء(ع)</h3>
-                        </div>
-                        <a class="left item" onclick="$('#sidebar.ui.sidebar').sidebar('toggle');">
-                            <i class="sidebar icon"></i>
-                        </a>
-                    </div>
+        <div class="ui fixed inverted menu">
+            <div class="ui container">
+                <div class="item">
+                    <h3 class="ui large inverted right aligned header">لوحة التحكم - معهد تراث الأنبياء(ع)</h3>
                 </div>
-
+                <a class="left item" onclick="$('#sidebar.ui.sidebar').sidebar('toggle');">
+                    <div class="ui inverted icon button">
+                        <i class="sidebar icon"></i>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="ui container" style="margin-top: 60px;">
+            <div class="ui segment">
                 @yield("content")
             </div>
-
-           @yield("extra-content")
+            @yield("extra-content")
         </div>
     </div>
     @yield("script")

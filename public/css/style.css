@@ -105,3 +105,10 @@ textarea {
 {
     margin: 0 0 0 .85714286em !important;
 }
+
+/**********************************************************************/
+body ::-webkit-scrollbar
+{
+    -webkit-appearance: none;
+    width: 5px;
+}
