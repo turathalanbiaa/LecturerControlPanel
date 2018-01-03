@@ -12,6 +12,6 @@ class Lesson extends Model
 
     public function Comments()
     {
-        return $this->hasMany('App\Models\LessonComment', 'Lesson_ID', 'ID');
+        return $this->hasMany('App\Models\LessonComment', 'Lesson_ID', 'ID')->orderBy("ID","ASC");
     }
 }

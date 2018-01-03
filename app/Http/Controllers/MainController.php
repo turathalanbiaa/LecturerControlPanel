@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Course;
 use App\Models\Lecturer;
+use App\Models\Lesson;
 use App\Models\Message;
 use App\Models\Student;
 use Illuminate\Http\Request;
@@ -11,9 +13,63 @@ use Illuminate\Support\Facades\Input;
 
 class MainController extends Controller
 {
+    public function login()
+    {
+        if (!self::haveCookie())
+            return view("main.login");
+
+        return redirect("/");
+    }
+
+    public function loginValidation(Request $request)
+    {
+        $email = Input::get("email");
+        $password = Input::get("password");
+
+        $this->validate($request, [
+            'email' => 'required|exists:lecturer,email',
+            'password' => 'required|min:6'
+        ], [
+            'email.required' => 'يرجى ادخال البريد الإلكتروني.',
+            'email.exists' => 'البريد الإلكتروني غير موجود.',
+            'password.required' => 'يرجى أدخال كلمة المرور.',
+            'password.min' => 'يجب ان تكون كلمة المرور لاتقل عن 6 حروف.',
+        ]);
+
+        $lecturer = Lecturer::where('Email','=', $email)->where('Password','=', md5($password))->first();
+
+        if (!$lecturer)
+            return redirect('/login')->with('ErrorRegisterMessage', 'البريد الإلكتروني وكلمة المرور غير متطابقتين.');
+
+        $lecturer->SessionID = md5($lecturer->ID.$lecturer->Email.uniqid());
+        $success = $lecturer->save();
+
+        if (!$success)
+            return redirect('/login')->with('ErrorRegisterMessage', 'حدثت مشكلة اثناء تسجيل الدخول ! يرجى أعادة المحاولة.');
+
+        self::saveSession($lecturer->ID, $lecturer->Email, $lecturer->SessionID, $lecturer->Name);
+        self::setCookie($lecturer->SessionID);
+
+        return redirect("/");
+    }
+
+    public function logout()
+    {
+        $lecturer = Lecturer::where("SessionID", $_COOKIE["SESSION_ID"])->first();
+        unset($_SESSION["LECTURER_ID"]);
+        unset($_SESSION["SESSION_NAME"]);
+        unset($_SESSION["LECTURER_EMAIL"]);
+        unset($_SESSION["SESSION_ID"]);
+        setcookie("SESSION_ID" , null , time()-3600 , '/');
+        $lecturer->SessionID = null;
+        $success = $lecturer->save();
+        if ($success)
+            return redirect("/login");
+        return redirect("/");
+    }
+
     public function index()
     {
-
 //            $unwatchedMessages = DB::table('student')
 //                ->leftJoin('message', 'student.ID', '=', 'message.Sender')
 //                ->where('message.Target',$lecturer->ID)
@@ -92,59 +148,32 @@ class MainController extends Controller
         return redirect("/login");
     }
 
-    public function login()
+    public function courseInfo()
     {
-       if (!self::haveCookie())
-           return view("main.login");
+        if (self::haveCookie())
+        {
+            $lecturer = Lecturer::find($_SESSION["LECTURER_ID"]);
+            $course = Course::find(Input::get("id"));
+            $lessons = Lesson::where("Course_ID",Input::get("id"))->orderBy("ID","ASC")->paginate(20);
 
-       return redirect("/");
+            return view("main.course")->with(["lecturer"=>$lecturer, "course"=>$course, "lessons"=>$lessons]);
+        }
+
+        return redirect("/login");
     }
 
-    public function loginValidation(Request $request)
+    public function lessonInfo()
     {
-        $email = Input::get("email");
-        $password = Input::get("password");
+        if (self::haveCookie())
+        {
+            $lecturer = Lecturer::find($_SESSION["LECTURER_ID"]);
+            $lesson = Lesson::find(Input::get("id"));
+            $course = Course::find($lesson->Course_ID);
 
-        $this->validate($request, [
-            'email' => 'required|exists:lecturer,email',
-            'password' => 'required|min:6'
-        ], [
-            'email.required' => 'يرجى ادخال البريد الإلكتروني.',
-            'email.exists' => 'البريد الإلكتروني غير موجود.',
-            'password.required' => 'يرجى أدخال كلمة المرور.',
-            'password.min' => 'يجب ان تكون كلمة المرور لاتقل عن 6 حروف.',
-        ]);
+            return view("main.lesson")->with(["lecturer"=>$lecturer, "course"=>$course, "lesson"=>$lesson]);
+        }
 
-        $lecturer = Lecturer::where('Email','=', $email)->where('Password','=', md5($password))->first();
-
-        if (!$lecturer)
-            return redirect('/login')->with('ErrorRegisterMessage', 'البريد الإلكتروني وكلمة المرور غير متطابقتين.');
-
-        $lecturer->SessionID = md5($lecturer->ID.$lecturer->Email.uniqid());
-        $success = $lecturer->save();
-
-        if (!$success)
-            return redirect('/login')->with('ErrorRegisterMessage', 'حدثت مشكلة اثناء تسجيل الدخول ! يرجى أعادة المحاولة.');
-
-        self::saveSession($lecturer->ID, $lecturer->Email, $lecturer->SessionID, $lecturer->Name);
-        self::setCookie($lecturer->SessionID);
-
-        return redirect("/");
-    }
-
-    public function logout()
-    {
-        $lecturer = Lecturer::where("SessionID", $_COOKIE["SESSION_ID"])->first();
-        unset($_SESSION["LECTURER_ID"]);
-        unset($_SESSION["SESSION_NAME"]);
-        unset($_SESSION["LECTURER_EMAIL"]);
-        unset($_SESSION["SESSION_ID"]);
-        setcookie("SESSION_ID" , null , time()-3600 , '/');
-        $lecturer->SessionID = null;
-        $success = $lecturer->save();
-        if ($success)
-            return redirect("/login");
-        return redirect("/");
+        return redirect("/login");
     }
 
     public static function haveCookie()

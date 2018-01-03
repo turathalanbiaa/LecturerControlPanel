@@ -17,7 +17,8 @@ Route::post('/login-validation','MainController@loginValidation');
 Route::get('/','MainController@index');
 Route::get('/message','MainController@showMessages');
 Route::post('/send-new-message','MainController@sendMessage');
-
+Route::get('/course','MainController@courseInfo');
+Route::get('/lesson','MainController@lessonInfo');
 
 Route::get('/logout','MainController@logout');
 
