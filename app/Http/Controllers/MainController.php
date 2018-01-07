@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Course;
 use App\Models\Lecturer;
 use App\Models\Lesson;
+use App\Models\LessonComment;
 use App\Models\Message;
 use App\Models\Student;
+use Egulias\EmailValidator\Warning\Comment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
@@ -170,7 +172,13 @@ class MainController extends Controller
             $lesson = Lesson::find(Input::get("id"));
             $course = Course::find($lesson->Course_ID);
 
-            return view("main.lesson")->with(["lecturer"=>$lecturer, "course"=>$course, "lesson"=>$lesson]);
+            if (Input::get("c") == "ShowPopularComments")
+                $comments = LessonComment::where("Lesson_ID", Input::get("id"))->orderBy("ID","DESC")->take(2)->get();
+
+            if (Input::get("c") == "ShowAllComments")
+                $comments = LessonComment::where("Lesson_ID", Input::get("id"))->orderBy("ID","DESC")->get();
+
+            return view("main.lesson")->with(["lecturer"=>$lecturer, "course"=>$course, "lesson"=>$lesson, "comments"=>$comments]);
         }
 
         return redirect("/login");

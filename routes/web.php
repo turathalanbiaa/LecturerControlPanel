@@ -21,4 +21,3 @@ Route::get('/course','MainController@courseInfo');
 Route::get('/lesson','MainController@lessonInfo');
 
 Route::get('/logout','MainController@logout');
-

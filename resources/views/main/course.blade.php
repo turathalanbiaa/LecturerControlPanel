@@ -14,7 +14,7 @@
         <div class="ui right aligned relaxed grid">
             @foreach($lessons as $lesson)
                 <div class="eight wide mobile four wide computer column">
-                    <a href="/lesson?id={{$lesson->ID}}" class="ui fluid button">{{$lesson->Title}}</a>
+                    <a href="/lesson?id={{$lesson->ID}}&c=ShowPopularComments" class="ui fluid button">{{$lesson->Title}}</a>
                 </div>
             @endforeach
         </div>
