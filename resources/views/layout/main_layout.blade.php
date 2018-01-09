@@ -26,6 +26,7 @@
             direction: ltr;
         }
     </style>
+    @yield("style")
 </head>
 
 <body>

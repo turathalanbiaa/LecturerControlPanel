@@ -8,7 +8,6 @@ use App\Models\Lesson;
 use App\Models\LessonComment;
 use App\Models\Message;
 use App\Models\Student;
-use Egulias\EmailValidator\Warning\Comment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
@@ -173,7 +172,7 @@ class MainController extends Controller
             $course = Course::find($lesson->Course_ID);
 
             if (Input::get("c") == "ShowPopularComments")
-                $comments = LessonComment::where("Lesson_ID", Input::get("id"))->orderBy("ID","DESC")->take(2)->get();
+                $comments = LessonComment::where("Lesson_ID", Input::get("id"))->orderBy("ID","DESC")->take(20)->get();
 
             if (Input::get("c") == "ShowAllComments")
                 $comments = LessonComment::where("Lesson_ID", Input::get("id"))->orderBy("ID","DESC")->get();
@@ -182,6 +181,53 @@ class MainController extends Controller
         }
 
         return redirect("/login");
+    }
+
+    public function sendComment(){
+        if (self::haveCookie())
+        {
+            $lesson = Lesson::find(Input::get("lesson_id"));
+            if ($lesson)
+            {
+                $comment = new LessonComment();
+                $comment->Text = Input::get("comment");
+                $comment->Lesson_ID = $lesson->ID;
+                $comment->Student_ID = null;
+                $comment->Lecturer_ID = $_SESSION["LECTURER_ID"];
+                $comment->Time = date("Y-m-d h:i:s");
+                $success = $comment->save();
+                if (!$success)
+                    return ["success"=>false];
+                return ["success"=>true, "comment"=>$comment];
+            }
+            return ["lesson"=>"Not Found"];
+        }
+
+        return redirect("/login");
+    }
+
+    public function deleteComment(){
+        if (self::haveCookie())
+        {
+            $comment = LessonComment::where("ID",Input::get("comment_id"))
+                ->where("Lesson_ID",Input::get("lesson_id"))
+                ->first();
+            if ($comment)
+            {
+                $success = $comment->delete();
+                if (!$success)
+                    return ["success"=>false];
+                return ["success"=>true];
+            }
+            return ["comment"=>"Not Found"];
+        }
+
+        return redirect("/login");
+    }
+
+    public function addQuestion()
+    {
+        dd(Input::all());
     }
 
     public static function haveCookie()
