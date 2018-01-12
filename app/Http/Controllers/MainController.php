@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Models\EExamOption;
+use App\Models\EExamQuestion;
 use App\Models\Lecturer;
 use App\Models\Lesson;
 use App\Models\LessonComment;
@@ -225,9 +227,67 @@ class MainController extends Controller
         return redirect("/login");
     }
 
-    public function addQuestion()
+    public function addQuestion(Request $request)
     {
-        dd(Input::all());
+        if (self::haveCookie())
+        {
+            $this->validate($request,[
+                "lessonID" => "required|numeric",
+                "question" => "required",
+                "option-1" => "required",
+                "option-2" => "required",
+                "option-3" => "required",
+                "option-4" => "required",
+                "answer"   => "required|numeric|between:1,4"
+            ], [
+                "lessonID.required" => "تحذير !! تقوم بأرسال بيانات غير صحيحة.",
+                "lessonID.numeric"  => "تحذير !! تقوم بأرسال بيانات غير صحيحة.",
+                "question.required" => "لايوجد هنالك سؤال!! يرجى وضع سؤال للدرس ان كنت ترغب في ذلك.",
+                "option-1.required" => "الأختيار الأول فارغ.",
+                "option-2.required" => "الأختيار الثاني فارغ.",
+                "option-3.required" => "الأختيار الثالث فارغ.",
+                "option-4.required" => "الأختيار الرابع فارغ.",
+                "answer.required"   => "يجب أختيار الجواب الصحيح.",
+                "answer.numeric"    => "تحذير !! تقوم بأرسال بيانات غير صحيحة.",
+                "answer.between"    => "تحذير !! تقوم بأرسال بيانات غير صحيحة."
+            ]);
+            $lesson = Lesson::find(Input::get("lessonID"));
+            if(!$lesson)
+                return back()->withInput();
+
+            DB::transaction(function ()
+            {
+                $lesson = Lesson::find(Input::get("lessonID"));
+                $eExamQuestion = new EExamQuestion;
+                $eExamQuestion->Question = Input::get("question");
+                $answer  = Input::get("answer");
+                switch ($answer)
+                {
+                    case '1': $eExamQuestion->Answer = Input::get("option-1"); break;
+                    case '2': $eExamQuestion->Answer = Input::get("option-2"); break;
+                    case '3': $eExamQuestion->Answer = Input::get("option-3"); break;
+                    case '4': $eExamQuestion->Answer = Input::get("option-4"); break;
+                }
+                $eExamQuestion->Lesson_ID = $lesson->ID;
+                $eExamQuestion->Course_ID = $lesson->Course_ID;
+                $eExamQuestion->save();
+
+                $countOFOption = 1;
+                while ($countOFOption <= 4)
+                {
+                    $eExamOption = new EExamOption;
+                    $eExamOption->Question_ID = $eExamQuestion->ID;
+                    $eExamOption->Option = Input::get("option-".$countOFOption);
+                    $eExamOption->save();
+
+                    $countOFOption = $countOFOption + 1;
+                }
+            });
+
+            return redirect("/lesson?id=$lesson->ID&c=ShowPopularComments")->with("AddQuestionMessage","تمت أضافة السؤال بنجاح.");
+        }
+
+        return redirect("/login");
     }
 
     public static function haveCookie()

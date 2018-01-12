@@ -4,10 +4,20 @@
     <title>لوحة التحكم - الرسائل</title>
 @endsection
 
+@section("style")
+    <style>
+        .ui.segment.dimmable,
+        .ui.segment.dimmable.dimmed
+        {
+            margin: 0;
+        }
+    </style>
+@endsection
+
 @section("content")
     <div class="ui one column grid">
         <div class="column">
-            <form class="ui form" method="get" action="/message">
+            <form class="ui form" method="get" action="/message" dir="rtl">
                 <div class="inline fields" style="margin-bottom: 0;">
                     <div class="fourteen wide field" style="padding: 0!important;">
                         <div class="ui search selection dropdown" style="width: 100%;">
@@ -32,16 +42,16 @@
         <div class="column">
             <div class="ui grid">
                 <div class="four wide computer only column">
-                    <div class="ui vertical teal fluid  menu" style="max-height: 750px; overflow-y: scroll; overflow-x: hidden;">
+                    <div class="ui vertical teal fluid menu" style="max-height: 750px; overflow-y: scroll; overflow-x: hidden;">
                         @foreach($students as $student)
-                            <a class="item" href="/message?studentId={{$student->ID}}">
+                            <a class="@if(isset($_GET["studentId"])) @if($_GET["studentId"] == $student->ID) {{"active"}} @endif @endif item" href="/message?studentId={{$student->ID}}">
                                 {{$student->Name}}
                             </a>
                         @endforeach
                     </div>
                 </div>
 
-                <div class="sixteen wide mobile sixteen wide tablet twelve wide computer stretched column">
+                <div class="sixteen wide mobile sixteen wide tablet twelve wide computer stretched column" style="height: 778px;">
                     @if(is_null($currentStudent))
                         <div class="ui segment">
                             <div class="ui dimmer">
@@ -90,14 +100,12 @@
 
                         <div style="max-height: 50px;">
                             <div class="ui big form" dir="rtl">
-                                {!! csrf_field() !!}
-                                <input type="hidden" name="id" value="{{$currentStudent->ID}}">
-                                <div class="inline fields" style="margin: 0;">
-                                    <div class="sixteen wide field" style="padding:0;">
-                                        <input type="text" name="message" placeholder="اكتب هنا..." style="margin: 0 !important; border-radius: 0 .28571429rem .28571429rem 0;">
-                                        <div class="ui positive icon button" id="send-new-message" style="padding: 17px; border-radius: .28571429rem 0 0 .28571429rem;">
-                                            <i class="plus icon"></i>
-                                        </div>
+                                <div class="field">
+                                    <div class="ui left icon input">
+                                        <input type="hidden" name="_token" value="lMoa3DspBt0SjLZDMZoE5pO4yhHZjdPtJ44Bwyo8">
+                                        <input type="hidden" name="id" value="{{$currentStudent->ID}}">
+                                        <input type="text" name="message" placeholder="أكتب هنا ..." onkeypress="sendMessage(event)" style="text-align: right;">
+                                        <i class="send icon"></i>
                                     </div>
                                 </div>
                             </div>
@@ -113,42 +121,44 @@
     <script>
         $('.ui.selection.dropdown').dropdown();
         $('#messages-list').parent().scrollTop($('#messages-list').outerHeight());
-        $("#send-new-message").click(function() {
-            var _token = $("input[type='hidden'][name='_token']").val();
-            var studentId = $("input[type='hidden'][name='id']").val();
-            var message = $("input[type='text'][name='message']").val();
-            var messageList = $('#messages-list');
-            $("#send-new-message").addClass("loading");
 
-            $.ajax({
-                type: "POST",
-                url: '/send-new-message',
-                data: {_token:_token, studentId:studentId, message:message},
-                datatype: 'json',
-                success: function(result) {
-                    if (result["success"] == false)
-                        snackbar("لم يتم ارسال الرسالة." , 3000 , "error");
+        function sendMessage(event) {
+            var char = event.which || event.keyCode;
+            if (char == 13)
+            {
+                var _token = $("input[type='hidden'][name='_token']").val();
+                var studentId = $("input[type='hidden'][name='id']").val();
+                var message = $("input[type='text'][name='message']").val();
+                var messageList = $('#messages-list');
 
-                    else if (result["success"] == true)
-                    {
-                        var imageItem = "<img class='ui avatar image' src='{{asset("/image/lecturer.jpg")}}'>";
-                        var headerContentItem = "<a class='header'> {{$lecturer->Name}} </a>";
-                        var descriptionContentItem = "<div class='description'>" + result["message"] + "</div>";
-                        var contentItem = "<div class='content'>" + headerContentItem + descriptionContentItem + "</div>";
-                        var newItem = "<div class='item'>" + imageItem + contentItem + "</div>";
-                        messageList.append(newItem);
+                $.ajax({
+                    type: "POST",
+                    url: '/send-new-message',
+                    data: {_token:_token, studentId:studentId, message:message},
+                    datatype: 'json',
+                    success: function(result) {
+                        if (result["success"] == false)
+                            snackbar("لم يتم ارسال الرسالة." , 3000 , "error");
+
+                        else if (result["success"] == true)
+                        {
+                            var imageItem = "<img class='ui avatar image' src='{{asset("/image/lecturer.jpg")}}'>";
+                            var headerContentItem = "<a class='header'> {{$lecturer->Name}} </a>";
+                            var descriptionContentItem = "<div class='description'>" + result["message"] + "</div>";
+                            var contentItem = "<div class='content'>" + headerContentItem + descriptionContentItem + "</div>";
+                            var newItem = "<div class='item'>" + imageItem + contentItem + "</div>";
+                            messageList.append(newItem);
+                        }
+                    },
+                    error: function() {
+                        snackbar("تحقق من الاتصال بالانترنت" , 3000 , "error");
+                    } ,
+                    complete : function() {
+                        $('#messages-list').parent().scrollTop($('#messages-list').outerHeight());
+                        $("input[type='text'][name='message']").val('');
                     }
-                },
-                error: function() {
-                    snackbar("تحقق من الاتصال بالانترنت" , 3000 , "error");
-                } ,
-                complete : function() {
-                    $('#messages-list').parent().scrollTop($('#messages-list').outerHeight());
-                    $("#send-new-message").removeClass("loading");
-                    $("input[type='text'][name='message']").val('');
-                }
-            });
-        });
-
+                });
+            }
+        }
     </script>
 @endsection

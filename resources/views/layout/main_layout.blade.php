@@ -25,6 +25,14 @@
         {
             direction: ltr;
         }
+
+        #discussion
+        {
+            background-color: transparent;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
     </style>
     @yield("style")
 </head>
@@ -39,9 +47,25 @@
             <i class="cubes icon" ></i>
             <span>الدورات</span>
         </a>
-        <a class="item" onclick="$('#message-sidebar.ui.sidebar').sidebar('toggle');">
+        <a class="item" href="/message">
             <i class="mail icon"></i>
             <span>الرسائل</span>
+        </a>
+        <a class="item">
+            <i class="block layout icon"></i>
+            <form class="ui form" method="post" action="http://discussion.turathalanbiaa.com">
+                <input type="hidden" name="email" value="{{$_SESSION["LECTURER_ID"] . "_" . $_SESSION["LECTURER_EMAIL"]}}">
+                <input type="hidden" name="password" value="{{md5($_SESSION["LECTURER_ID"] . "_" . $_SESSION["LECTURER_EMAIL"])}}">
+                <input type="hidden" name="gender" value="1">
+                <input type="hidden" name="type" value="2">
+                <input type="hidden" name="level" value="0">
+                <input type="hidden" name="name" value="{{$_SESSION["LECTURER_NAME"]}}">
+                <input type="submit" value="المباحثات" id="discussion">
+            </form>
+        </a>
+        <a class="item" href="/logout">
+            <i class="shutdown icon"></i>
+            <span>تسجيل خروج</span>
         </a>
     </div>
 
@@ -49,20 +73,6 @@
         <div class="item" style="text-align: right;">
             <h3 class="ui inverted header">
                 <span>الدورات</span>
-            </h3>
-            <div class="menu" style="font-size: 16px;">
-                <?php $courses = $lecturer->Courses; ?>
-                @foreach($courses as $course)
-                    <a class="item" href="/course?id={{$course->ID}}" style="text-align: right;">{{$course->Name}}</a>
-                @endforeach
-            </div>
-        </div>
-    </div>
-
-    <div class="ui right vertical inverted sidebar labeled menu" id="messages-sidebar">
-        <div class="item" style="text-align: right;">
-            <h3 class="ui inverted header">
-                <span>الطلاب</span>
             </h3>
             <div class="menu" style="font-size: 16px;">
                 <?php $courses = $lecturer->Courses; ?>

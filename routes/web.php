@@ -22,5 +22,4 @@ Route::get('/lesson','MainController@lessonInfo');
 Route::post('/send-new-comment', 'MainController@sendComment');
 Route::post('/delete-comment', 'MainController@deleteComment');
 Route::post('/add-question', 'MainController@addQuestion');
-
 Route::get('/logout','MainController@logout');
