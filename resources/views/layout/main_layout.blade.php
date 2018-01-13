@@ -54,8 +54,8 @@
         <a class="item">
             <i class="block layout icon"></i>
             <form class="ui form" method="post" action="http://discussion.turathalanbiaa.com">
-                <input type="hidden" name="email" value="{{$_SESSION["LECTURER_ID"] . "_" . $_SESSION["LECTURER_EMAIL"]}}">
-                <input type="hidden" name="password" value="{{md5($_SESSION["LECTURER_ID"] . "_" . $_SESSION["LECTURER_EMAIL"])}}">
+                <input type="hidden" name="email" value="{{$_SESSION["LECTURER_ID"]."@turath.com"}}">
+                <input type="hidden" name="password" value="{{md5($_SESSION["LECTURER_ID"])}}">
                 <input type="hidden" name="gender" value="1">
                 <input type="hidden" name="type" value="2">
                 <input type="hidden" name="level" value="0">

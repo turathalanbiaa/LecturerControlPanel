@@ -73,19 +73,20 @@ class MainController extends Controller
 
     public function index()
     {
-//            $unwatchedMessages = DB::table('student')
-//                ->leftJoin('message', 'student.ID', '=', 'message.Sender')
-//                ->where('message.Target',$lecturer->ID)
-//                ->where('message.SenderType',1)
-//                ->where('message.Watched',0)
-//                ->get();
-
         if (self::haveCookie())
         {
             $lecturer = Lecturer::find($_SESSION["LECTURER_ID"]);
 
+            $unwatchedMessages = DB::table('student')
+                ->leftJoin('message', 'student.ID', '=', 'message.Sender')
+                ->where('message.Target',$_SESSION["LECTURER_ID"])
+                ->where('message.SenderType',1)
+                ->where('message.Watched',0)
+                ->paginate(20);
+
             return view("main.main")->with([
-                "lecturer"=>$lecturer
+                "lecturer"=>$lecturer,
+                "unwatchedMessages"=>$unwatchedMessages
             ]);
         }
 
@@ -116,6 +117,13 @@ class MainController extends Controller
                     })
                     ->orderBy('ID')
                     ->get();
+
+                foreach ($messages as $message)
+                {
+                    $m = Message::find($message->ID);
+                    $m->Watched = 1;
+                    $m->save();
+                }
             }
 
             return view("main.messages")->with([
