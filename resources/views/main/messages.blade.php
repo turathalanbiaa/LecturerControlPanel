@@ -102,7 +102,7 @@
                             <div class="ui big form" dir="rtl">
                                 <div class="field">
                                     <div class="ui left icon input">
-                                        <input type="hidden" name="_token" value="lMoa3DspBt0SjLZDMZoE5pO4yhHZjdPtJ44Bwyo8">
+                                        {!! csrf_field() !!}
                                         <input type="hidden" name="id" value="{{$currentStudent->ID}}">
                                         <input type="text" name="message" placeholder="أكتب هنا ..." onkeypress="sendMessage(event)" style="text-align: right;">
                                         <i class="send icon"></i>
