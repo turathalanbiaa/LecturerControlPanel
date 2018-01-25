@@ -53,15 +53,28 @@
         </a>
         <a class="item">
             <i class="block layout icon"></i>
-            <form class="ui form" method="post" action="http://discussion.turathalanbiaa.com">
-                <input type="hidden" name="email" value="{{$_SESSION["LECTURER_ID"]."@turath.com"}}">
-                <input type="hidden" name="password" value="{{md5($_SESSION["LECTURER_ID"])}}">
-                <input type="hidden" name="gender" value="1">
-                <input type="hidden" name="type" value="2">
-                <input type="hidden" name="level" value="0">
-                <input type="hidden" name="name" value="{{$_SESSION["LECTURER_NAME"]}}">
-                <input type="submit" value="المباحثات" id="discussion">
-            </form>
+            @if($_SESSION["LECTURER_ID"] != 11)
+                <form class="ui form" method="post" action="http://discussion.turathalanbiaa.com">
+                    <input type="hidden" name="email" value="{{$_SESSION["LECTURER_ID"]."@turath.com"}}">
+                    <input type="hidden" name="password" value="{{md5($_SESSION["LECTURER_ID"])}}">
+                    <input type="hidden" name="gender" value="1">
+                    <input type="hidden" name="type" value="2">
+                    <input type="hidden" name="level" value="0">
+                    <input type="hidden" name="name" value="{{$_SESSION["LECTURER_NAME"]}}">
+                    <input type="submit" value="المباحثات" id="discussion">
+                </form>
+            @else
+                <form class="ui form" method="post" action="http://discussion.turathalanbiaa.com">
+                    <input type="hidden" name="email" value="{{$_SESSION["LECTURER_ID"]."@turath.com"}}">
+                    <input type="hidden" name="password" value="{{md5($_SESSION["LECTURER_ID"])}}">
+                    <input type="hidden" name="gender" value="1">
+                    <input type="hidden" name="type" value="3">
+                    <input type="hidden" name="level" value="0">
+                    <input type="hidden" name="name" value="{{$_SESSION["LECTURER_NAME"]}}">
+                    <input type="submit" value="المباحثات" id="discussion">
+                </form>
+            @endif
+
         </a>
         <a class="item" href="/logout">
             <i class="shutdown icon"></i>
